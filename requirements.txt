@@ -1,1 +1,1 @@
-arviz
+azure-monitor-opentelemetry-exporter
