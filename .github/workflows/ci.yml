@@ -28,24 +28,21 @@ jobs:
       - name: Archive web application
         run: |
           mkdir -p dist
-          zip -r dist/mybinary.zip .
+          cp -r requirements.txt dist/
+          cd dist && zip -r mybinary.zip . && cd ..
 
-      - name: Generate base64-encoded SHA256 subject
+      - name: Generate base64-encoded SHA256 hash
         id: hash
         run: |
-          mkdir -p dist
-          zip -r dist/mybinary.zip .
-          HASH=$(sha256sum dist/mybinary.zip | cut -d ' ' -f 1)
+          cd dist
+          sha256sum mybinary.zip | base64 -w0 > hash.b64
+          echo "base64=$(cat hash.b64)" >> $GITHUB_OUTPUT
 
-          JSON=$(jq -n --arg name "dist/mybinary.zip" --arg hash "$HASH" '[{name: $name, digest: {sha256: $hash}}]')
-          ENCODED=$(echo "$JSON" | base64 -w0)
-          echo "base64=$ENCODED" >> $GITHUB_OUTPUT
-
-      - name: Upload zip
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mybinary
-          path: dist/mybinary.zip          
+          name: python-web-app
+          path: dist/mybinary.zip
 
   provenance:
     needs: [build]
@@ -57,4 +54,4 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.hashes }}"
       upload-assets: false
-      provenance-name: provenance.intoto.jsonl         
+      provenance-name: provenance.intoto.jsonl       
