@@ -30,12 +30,14 @@ jobs:
           mkdir -p dist
           cp requirements.txt dist && zip -r mybinary.zip . && cd ..          
 
-      - name: Generate base64-encoded SHA256 hash
+      - name: Generate base64-encoded SHA256 subject
         id: hash
         run: |
           cd dist
-          sha256sum mybinary.zip | base64 -w0 > hash.b64
-          echo "base64=$(cat hash.b64)" >> $GITHUB_OUTPUT
+          HASH=$(sha256sum mybinary.zip | cut -d ' ' -f 1)
+          echo "[{\"name\":\"dist/mybinary.zip\",\"digest\":{\"sha256\":\"$HASH\"}}]" > subjects.json
+          base64 -w0 subjects.json > subjects.b64
+          echo "base64=$(cat subjects.b64)" >> $GITHUB_OUTPUT
 
   provenance:
     needs: [build]
@@ -47,4 +49,4 @@ jobs:
     with:
       base64-subjects: "${{ needs.build.outputs.hashes }}"
       upload-assets: false
-      provenance-name: provenance.intoto.jsonl          
+      provenance-name: provenance.intoto.jsonl         
