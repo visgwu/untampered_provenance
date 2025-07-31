@@ -28,7 +28,7 @@ jobs:
       - name: Archive web application
         run: |
           mkdir -p dist
-          cp -r src requirements.txt dist/
+          cp requirements.txt dist/
           && zip -r mybinary.zip . && cd ..          
 
       - name: Generate base64-encoded SHA256 hash
