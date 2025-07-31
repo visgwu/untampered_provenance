@@ -1,1 +1,1 @@
-fonttools
+google-cloud-aiplatform
