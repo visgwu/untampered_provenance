@@ -1,1 +1,1 @@
-azure-monitor-opentelemetry-exporter
+cibuildwheel
