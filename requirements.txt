@@ -1,1 +1,1 @@
-pycodestyle
+pytest-django
