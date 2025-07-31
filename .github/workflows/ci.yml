@@ -25,11 +25,17 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Archive web application
+        run: |
+          mkdir -p dist
+          cp -r src requirements.txt dist/
+          && zip -r mybinary.zip . && cd ..          
+
       - name: Generate base64-encoded SHA256 hash
         id: hash
         run: |
           cd dist
-          sha256sum tampered_package_names.txt | base64 -w0 > hash.b64
+          sha256sum mybinary.zip | base64 -w0 > hash.b64
           echo "base64=$(cat hash.b64)" >> $GITHUB_OUTPUT
 
   provenance:
