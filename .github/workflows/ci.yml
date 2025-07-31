@@ -1,0 +1,45 @@
+name: Build & Generate Provenance
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    outputs:
+      hashes: ${{ steps.hash.outputs.base64 }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Generate base64-encoded SHA256 hash
+        id: hash
+        run: |
+          cd dist
+          sha256sum tampered_package_names.txt | base64 -w0 > hash.b64
+          echo "base64=$(cat hash.b64)" >> $GITHUB_OUTPUT
+
+  provenance:
+    needs: [build]
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: "${{ needs.build.outputs.hashes }}"
+      upload-assets: false
+      provenance-name: provenance.intoto.jsonl          
