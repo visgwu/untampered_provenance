@@ -1,1 +1,1 @@
-awswrangler
+google-cloud-bigquery
