@@ -33,8 +33,19 @@ jobs:
       - name: Generate base64-encoded SHA256 subject
         id: hash
         run: |
+          mkdir -p dist
+          zip -r dist/mybinary.zip .
           HASH=$(sha256sum dist/mybinary.zip | cut -d ' ' -f 1)
-          echo "[{\"name\":\"dist/mybinary.zip\",\"digest\":{\"sha256\":\"$HASH\"}}]" > subjects.json
+          cat <<EOF > subjects.json
+          [
+            {
+              "name": "dist/mybinary.zip",
+              "digest": {
+                "sha256": "$HASH"
+              }
+            }
+          ]
+          EOF
           base64 -w0 subjects.json > subjects.b64
           echo "base64=$(cat subjects.b64)" >> $GITHUB_OUTPUT
 
