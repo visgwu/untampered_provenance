@@ -1,1 +1,1 @@
-amzn-awsglue
+appsec-script-py
