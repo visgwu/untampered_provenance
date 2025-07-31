@@ -1,1 +1,1 @@
-gradio-client
+accelerate
