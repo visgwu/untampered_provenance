@@ -1,1 +1,1 @@
-awswrangler
+accelerate
